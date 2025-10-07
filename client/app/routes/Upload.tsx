@@ -1,16 +1,7 @@
 import { Form } from "react-router";
 import type { Route } from "./+types/Upload";
-
-export function parseCsvFile(content: string, fileName: string) {
-  const lines = content.trim().split("\n");
-  const rows = lines.map(line => line.trim().split(";"));
-  const dataRows = rows.slice(1);
-
-  return {
-    fileName,
-    rowCount: dataRows.length,
-  };
-}
+import { parseAndAnalyzeCsvFile } from "~/lib/csv/parseAndAnalyzeCsvFile";
+import { getNameList } from "~/lib/getNameList";
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -25,9 +16,10 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   const fileContent = await file.text();
-  const result = parseCsvFile(fileContent, file.name);
+  const nameList = getNameList();
+  const result = parseAndAnalyzeCsvFile(fileContent, file.name, nameList);
   
-  console.log("Result: ", result);
+  console.log("Result: ", JSON.stringify(result));
 
   return { success: true, result: result };
 }
