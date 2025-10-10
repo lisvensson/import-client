@@ -38,7 +38,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     return redirect("/upload");
 }
 
-export default function SignIn({ actionData, loaderData }: Route.ComponentProps) {
+export default function SignIn({ actionData }: Route.ComponentProps) {
     return (
         <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12">
             <div className="max-w-md w-full text-center">
