@@ -32,9 +32,10 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
             provider: "microsoft",
             callbackURL: "/upload", 
         })
+        return null
     }
   
-    return null
+    return redirect("/upload");
 }
 
 export default function SignIn({ actionData, loaderData }: Route.ComponentProps) {
