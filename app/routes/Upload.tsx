@@ -1,4 +1,4 @@
-import { Form, redirect } from "react-router";
+import { Form } from "react-router";
 import type { Route } from "./+types/Upload";
 import { parseAndAnalyzeCsvFile } from "~/lib/csv/parseAndAnalyzeCsvFile";
 import { getNameList } from "~/lib/getNameList";

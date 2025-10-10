@@ -23,7 +23,21 @@ export async function action({ request }: Route.ActionArgs) {
     return redirect("/upload");
 }
 
-export default function SignIn({ actionData }: Route.ComponentProps) {
+export async function clientAction({ request }: Route.ClientActionArgs) {
+    const formData = await request.formData();
+    const provider = formData.get("provider");
+
+    if (provider) {
+        await authClient.signIn.social({
+            provider: "microsoft",
+            callbackURL: "/upload", 
+        })
+    }
+  
+    return null
+}
+
+export default function SignIn({ actionData, loaderData }: Route.ComponentProps) {
     return (
         <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12">
             <div className="max-w-md w-full text-center">
@@ -63,23 +77,17 @@ export default function SignIn({ actionData }: Route.ComponentProps) {
                         name="provider" 
                         value="microsoft" />
                     <button 
-                        type="button"
-                        onClick={() =>
-                            authClient.signIn.social({
-                            provider: "microsoft",
-                            callbackURL: "/upload",
-                            })
-                        }
+                        type="submit"
                         className="w-full bg-gray-100 text-gray-800 py-2 rounded-md border border-gray-300 hover:bg-gray-200"
                     >
                         Logga in med Microsoft <i className="fa-brands fa-microsoft"></i>
                     </button>
                 </Form>
                 <p className="mt-6 text-sm text-gray-500">
-                Saknar du konto?{" "}
-                <a href="/signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
-                    Skapa ett konto här
-                </a>
+                    Saknar du konto?{" "}
+                    <a href="/signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
+                        Skapa ett konto här
+                    </a>
                 </p>
             </div>
         </div>

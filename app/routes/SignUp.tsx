@@ -13,14 +13,14 @@ export async function action({ request }: Route.ActionArgs) {
     name,
     email,
     password,
-    callbackURL: "/",
+    callbackURL: "/upload",
   });
 
   if (error) {
     return { error: error.message };
   }
 
-  return redirect("/");
+  return redirect("/upload");
 }
 
 export default function SignUp({ actionData }: Route.ComponentProps) {
