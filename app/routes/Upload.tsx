@@ -1,27 +1,30 @@
 import { Form } from "react-router";
 import type { Route } from "./+types/Upload";
-import { parseAndAnalyzeCsvFile } from "~/lib/csv/parseAndAnalyzeCsvFile";
+import { parseFormData } from "@remix-run/form-data-parser";
+import { uploadHandler } from "~/lib/csv/uploadHandler";
 import { getNameList } from "~/lib/getNameList";
+import { parseAndAnalyzeCsvFile } from "~/lib/csv/parseAndAnalyzeCsvFile";
 
 export async function action({ request }: Route.ActionArgs) {
-  const formData = await request.formData();
-  const file = formData.get("file");
+  try {
+    const formData = await parseFormData(request, uploadHandler);
+    const uploadedFile = formData.get("file");
+    const parsedFile = typeof uploadedFile === "string" ? JSON.parse(uploadedFile) : null;
 
-  if (!(file instanceof File) || !file.name) {
-    return { error: "Ingen fil vald, välj en fil att ladda upp." };
+    if (!parsedFile?.success) {
+      return { success: false, error: parsedFile?.error ?? "Okänt fel vid uppladdning." };
+    }
+
+    const nameList = getNameList();
+    const result = parseAndAnalyzeCsvFile(parsedFile.content, parsedFile.fileName, nameList);
+
+    console.log(JSON.stringify(result))
+
+    return { success: true, result };
+  } catch (error) {
+    console.error("Upload failed:", error);
+    return { success: false, error: "Uppladdning misslyckades." };
   }
-
-  if (file.type !== "text/csv") {
-    return { error: "Endast CSV-filer tillåts" };
-  }
-
-  const fileContent = await file.text();
-  const nameList = getNameList();
-  const result = parseAndAnalyzeCsvFile(fileContent, file.name, nameList);
-
-  console.log("Result: ", JSON.stringify(result));
-
-  return { success: true, result };
 }
 
 export default function Upload({ actionData }: Route.ComponentProps) {
@@ -39,7 +42,6 @@ export default function Upload({ actionData }: Route.ComponentProps) {
         {actionData?.success && (
           <div className="text-green-600 mb-4 font-medium">Uppladdning lyckades!</div>
         )}
-
         <Form method="post" encType="multipart/form-data" className="space-y-4 text-left">
           <input
             type="file"
