@@ -33,7 +33,7 @@ export default function Upload({ actionData }: Route.ComponentProps) {
       <div className="max-w-md w-full text-center">
         <h1 className="text-2xl font-bold mb-4 text-gray-900">Ladda upp en CSV-fil</h1>
         <p className="text-gray-600 mb-6">
-          Välj en CSV-fil med namn eller data som ska analyseras.
+          Välj en CSV-fil som ska analyseras.
         </p>
 
         {actionData?.error && (
