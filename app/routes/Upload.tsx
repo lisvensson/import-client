@@ -4,6 +4,9 @@ import { parseFormData } from "@remix-run/form-data-parser";
 import { uploadHandler } from "~/lib/csv/uploadHandler";
 import { getNameList } from "~/lib/getNameList";
 import { parseAndAnalyzeCsvFile } from "~/lib/csv/parseAndAnalyzeCsvFile";
+import { requireAuthMiddleware } from "~/middleware/requireAuthMiddleware";
+
+export const middleware: Route.MiddlewareFunction[] = [requireAuthMiddleware];
 
 export async function action({ request }: Route.ActionArgs) {
   try {
@@ -12,18 +15,18 @@ export async function action({ request }: Route.ActionArgs) {
     const parsedFile = typeof uploadedFile === "string" ? JSON.parse(uploadedFile) : null;
 
     if (!parsedFile?.success) {
-      return { success: false, error: parsedFile?.error ?? "Okänt fel vid uppladdning." };
+      return { success: false, error: parsedFile?.error ?? "Okänt fel vid uppladdning." }
     }
 
     const nameList = getNameList();
     const result = parseAndAnalyzeCsvFile(parsedFile.content, parsedFile.fileName, nameList);
 
-    console.log(JSON.stringify(result))
+    console.log("Uploaded file result: ", JSON.stringify(result))
 
     return { success: true, result };
   } catch (error) {
     console.error("Upload failed:", error);
-    return { success: false, error: "Uppladdning misslyckades." };
+    return { success: false, error: "Uppladdning misslyckades." }
   }
 }
 

@@ -1,7 +1,6 @@
 import { Form, redirect } from "react-router";
-import { authClient } from "~/shared/auth/client";
 import type { Route } from "./+types/SignUp";
-
+import { auth } from "~/shared/auth";
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -9,19 +8,32 @@ export async function action({ request }: Route.ActionArgs) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  const { error } = await authClient.signUp.email({
-    name,
-    email,
-    password,
-    callbackURL: "/upload",
+  const response = await auth.api.signUpEmail({
+    body: {
+      name,
+      email,
+      password,
+      callbackURL: "/upload",
+    },
+    asResponse: true,
   });
 
-  if (error) {
-    return { error: error.message };
+  if (response.ok) {
+    return redirect("/upload", {
+      headers: response.headers,
+    });
+  } else {
+    if (response.status === 422) {
+      return { error: "E-postadressen är redan registrerad." }
+    } 
+    if (response.status === 400) {
+      return { error: "Lösenord är för kort, pröva med ett längre lösenord." }
+    } else {
+      return { error: "Inloggning misslyckades" }
+    }
   }
+} 
 
-  return redirect("/upload");
-}
 
 export default function SignUp({ actionData }: Route.ComponentProps) {
   return (

@@ -1,41 +1,29 @@
 import { Form, redirect } from "react-router";
 import { authClient } from "~/shared/auth/client";
 import type { Route } from "./+types/SignUp";
-
+import { auth } from "~/shared/auth";
 
 export async function action({ request }: Route.ActionArgs) {
     const formData = await request.formData();
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    const { data, error } = await authClient.signIn.email({
-        email,
-        password,
-        callbackURL: "/upload",
+    const response = await auth.api.signInEmail({
+        body: { email, password },
+        asResponse: true,
     });
 
-    console.log(data);
-
-    if (error) {
-        return { error: error.message };
+    if (response.ok) {
+        return redirect("/upload", {
+        headers: response.headers,
+        });
+    } else {
+        if (response.status === 401) {
+            return { error: "Ogiltig e-postadress eller lösenord, försök igen." }
+        } else {
+            return { error: "Inloggning misslyckades" }
+        }
     }
-
-    return redirect("/upload");
-}
-
-export async function clientAction({ request }: Route.ClientActionArgs) {
-    const formData = await request.formData();
-    const provider = formData.get("provider");
-
-    if (provider) {
-        await authClient.signIn.social({
-            provider: "microsoft",
-            callbackURL: "/upload", 
-        })
-        return null
-    }
-  
-    return redirect("/upload");
 }
 
 export default function SignIn({ actionData }: Route.ComponentProps) {
@@ -68,22 +56,23 @@ export default function SignIn({ actionData }: Route.ComponentProps) {
                         type="submit"
                         className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700"
                     >
-                        Logga in
+                        Logga in med e-post
                     </button>
                 </Form>
-                <p className="mt-6 text-sm text-gray-500"> Eller</p>
-                <Form method="post" className="mt-4">
-                    <input 
-                        type="hidden" 
-                        name="provider" 
-                        value="microsoft" />
+                <div className="mt-4">
                     <button 
-                        type="submit"
+                        type="button"
+                        onClick={() =>
+                            authClient.signIn.social({
+                            provider: "microsoft",
+                            callbackURL: "/upload",
+                            })
+                        }
                         className="w-full bg-gray-100 text-gray-800 py-2 rounded-md border border-gray-300 hover:bg-gray-200"
                     >
                         Logga in med Microsoft <i className="fa-brands fa-microsoft"></i>
                     </button>
-                </Form>
+                </div>
                 <p className="mt-6 text-sm text-gray-500">
                     Saknar du konto?{" "}
                     <a href="/signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
