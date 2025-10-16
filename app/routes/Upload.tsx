@@ -4,9 +4,6 @@ import { parseFormData } from "@remix-run/form-data-parser";
 import { uploadHandler } from "~/lib/csv/uploadHandler";
 import { getNameList } from "~/lib/getNameList";
 import { parseAndAnalyzeCsvFile } from "~/lib/csv/parseAndAnalyzeCsvFile";
-import { requireAuthMiddleware } from "~/middleware/requireAuthMiddleware";
-
-export const middleware: Route.MiddlewareFunction[] = [requireAuthMiddleware];
 
 export async function action({ request }: Route.ActionArgs) {
   try {

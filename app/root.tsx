@@ -8,17 +8,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import "./app.css";
-import Navbar from "./components/Navbar";
-import { userSessionMiddleware } from "./middleware/userSessionMiddleware";
-import { userSessionContext } from "./context/userSessionContext";
-
-export const middleware: Route.MiddlewareFunction[] = [userSessionMiddleware] 
-export async function loader({ context }: { context: any }) {
-  const user = context.get(userSessionContext);
-  console.log("User in loader: ", user)
-  return { user }
-}
+import "./app.css"; 
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -59,9 +49,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <>
-      <header>
-        <Navbar />
-      </header>
       <main className="px-4 py-6">
         <Outlet />
       </main>

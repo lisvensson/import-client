@@ -14,7 +14,7 @@ export async function action({ request }: Route.ActionArgs) {
     });
 
     if (response.ok) {
-        return redirect("/upload", {
+        return redirect("/", {
         headers: response.headers,
         });
     } else {
@@ -65,7 +65,7 @@ export default function SignIn({ actionData }: Route.ComponentProps) {
                         onClick={() =>
                             authClient.signIn.social({
                             provider: "microsoft",
-                            callbackURL: "/upload",
+                            callbackURL: "/",
                             })
                         }
                         className="w-full bg-gray-100 text-gray-800 py-2 rounded-md border border-gray-300 hover:bg-gray-200"

@@ -13,13 +13,13 @@ export async function action({ request }: Route.ActionArgs) {
       name,
       email,
       password,
-      callbackURL: "/upload",
+      callbackURL: "/",
     },
     asResponse: true,
   });
 
   if (response.ok) {
-    return redirect("/upload", {
+    return redirect("/", {
       headers: response.headers,
     });
   } else {

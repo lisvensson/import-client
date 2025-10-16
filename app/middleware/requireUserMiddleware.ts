@@ -1,9 +1,13 @@
+import { redirect } from "react-router";
 import { userSessionContext } from "~/context/userSessionContext";
 import { auth } from "~/shared/auth";
 
-export const userSessionMiddleware = async ({ request, context } : { request: any, context: any }) => {
+export async function requireUserMiddleware({ request, context }: { request: any, context: any}) {
   const userSession = await auth.api.getSession(request);
-  console.log("userSession: ", userSession)
+
+  if (!userSession?.user) {
+    throw redirect("/signin");
+  }
 
   context.set(userSessionContext, userSession);
 }
